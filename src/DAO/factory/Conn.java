@@ -7,7 +7,7 @@ public interface Conn {
     String getErrMsg();
 
     void query(String sql);
-    void add(String estado, String json);
+    void add(String palabraAdivinada, String letras, int intentos, String tablero);
     void delete();
     void update();
 }

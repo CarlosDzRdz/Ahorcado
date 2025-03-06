@@ -26,9 +26,9 @@ public class LogDb implements Observer {
     }
 
     @Override
-    public void update(Tablero tablero){
-        try{
-            accesodatos.add(tablero.getLetrasIngresadas().toString(), tablero.getPalabraSecreta());
+    public void update(Tablero tablero) {
+        try {
+            accesodatos.add(tablero.getPalabraSecreta(), tablero.getLetrasIngresadas().toString(), tablero.getOportunidades(), tablero.getTablero());
         } catch (Exception e) {
             setErrMsg(accesodatos.getErrMsg());
         }

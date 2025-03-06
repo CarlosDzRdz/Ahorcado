@@ -45,29 +45,26 @@ public class Dao {
         }
     }
 
-    /*
-    public void add(String estado, char[][]tablero) {
+    public void add(String palabraAdivinada, String letras, int intentos, String[] tablero) {
         try {
-            estado = "Turno: " + estado;
             Gson gson = new Gson();
-            JsonArray json = gson.toJsonTree(tablero).getAsJsonArray();
-            conexion.add(estado, gson.toJson(json).toString());
-        } catch (Exception e) {
-            setErrMsg(e.getMessage());
-        }
-    }
-    */
+            JsonArray jsonArray = new JsonArray();
 
-    public void add(String estado, String tablero) {
-        try {
-            estado = "letras: " + estado;
-            Gson gson = new Gson();
-            JsonArray json = gson.toJsonTree(tablero).getAsJsonArray();
-            conexion.add(estado, gson.toJson(json).toString());
+            // Asegurarnos de que solo las posiciones necesarias estén llenas
+            for (int i = 0; i < tablero.length; i++) {
+                if (tablero[i] == null) { // Si no se ha usado, guardar como vacío
+                    jsonArray.add("");
+                } else {
+                    jsonArray.add(tablero[i]); // Si ya hay una parte, guardarla
+                }
+            }
+
+            conexion.add(palabraAdivinada, letras, intentos, gson.toJson(jsonArray));
         } catch (Exception e) {
             setErrMsg(e.getMessage());
         }
     }
+
 
     public Dao(Database db) {
         connFactory = getConnectionFactory(db);

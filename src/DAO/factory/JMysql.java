@@ -77,12 +77,12 @@ public class JMysql implements Conn {
 
                 while (rs.next()) {
                     int _id = rs.getInt("id");
-                    String json  = rs.getString("tablero");
+                    String json  = rs.getString("Tablero");
                     String palabraAdivinada = rs.getString("PalabraAdivinada");
                     String letras = rs.getString("Letras");
                     String intentos = rs.getString("Intentos");
 
-                    System.out.printf("id= %d Tablero%s PalabraAdivinada=%s Letras %s intentos%s", id, json, palabraAdivinada, letras, intentos);
+                    System.out.printf("id= %d Tablero%s PalabraAdivinada=%s Letras %s intentos%s", _id, json, palabraAdivinada, letras, intentos);
                 }
             }
         } catch (Exception e) {
@@ -92,11 +92,13 @@ public class JMysql implements Conn {
 
 
     @Override
-    public void add(String estado, String json) {
+    public void add(String palabraAdivinada, String letras, int intentos, String tableroJson) {
         String sql = "INSERT INTO tablero (fecha, Tablero, PalabraAdivinada, Letras, Intentos) VALUES (now(), ?, ?, ? ,?)";
         try(PreparedStatement smtp = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);){
-            smtp.setString(1, estado);
-            smtp.setString(2, json);
+            smtp.setString(1, tableroJson);
+            smtp.setString(2, palabraAdivinada);
+            smtp.setString(3, letras);
+            smtp.setInt(4, intentos);
             smtp.executeUpdate();
 
             ResultSet rs = smtp.getGeneratedKeys();

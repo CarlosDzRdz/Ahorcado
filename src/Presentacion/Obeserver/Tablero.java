@@ -13,7 +13,15 @@ public class Tablero {
     private StringBuilder letrasIngresadas;
     private String head1 = "", body1 = " ", lefta1 = " ", righta1 = " ", leftf1 = " ", rightf1 = " ";
     private String head, body, lefta, righta, leftf, rightf;
-    String [] monito;
+    String [] tablero;
+
+    public String[] getTablero() {
+        return tablero;
+    }
+
+    public void setTablero(String[] tablero) {
+        this.tablero = tablero;
+    }
 
     public int getOportunidades() {
         return oportunidades;
@@ -48,7 +56,7 @@ public class Tablero {
         this.oportunidades = 0;
         this.letrasIngresadas = new StringBuilder(); // Inicializamos como StringBuilder
         this.head = "O"; this.body = "|"; this.lefta = "\\"; this.righta = "/"; this.leftf = "\\"; this.rightf = "/";
-        this.monito = new String[] {head, body, lefta, righta, leftf, rightf};
+        this.tablero = new String[] {head, body, lefta, righta, leftf, rightf};
     }
 
 
@@ -66,12 +74,12 @@ public class Tablero {
 
         // Actualiza el estado acumulado en función de las oportunidades
         switch (oportunidades) {
-            case 1 -> head1 = monito[0]; // Asigna la cabeza
-            case 2 -> body1 = monito[1]; // Asigna el cuerpo
-            case 3 -> lefta1 = monito[2]; // Asigna el brazo izquierdo
-            case 4 -> righta1 = monito[3]; // Asigna el brazo derecho
-            case 5 -> leftf1 = monito[4]; // Asigna la pierna izquierda
-            case 6 -> rightf1 = monito[5]; // Asigna la pierna derecha
+            case 1 -> head1 = tablero[0]; // Asigna la cabeza
+            case 2 -> body1 = tablero[1]; // Asigna el cuerpo
+            case 3 -> lefta1 = tablero[2]; // Asigna el brazo izquierdo
+            case 4 -> righta1 = tablero[3]; // Asigna el brazo derecho
+            case 5 -> leftf1 = tablero[4]; // Asigna la pierna izquierda
+            case 6 -> rightf1 = tablero[5]; // Asigna la pierna derecha
         }
 
         // Imprime el estado acumulado del monito
@@ -122,4 +130,5 @@ public class Tablero {
             System.out.println("\n¡Perdiste! La palabra era: " + palabraSecreta);
         }
     }
+
 }
