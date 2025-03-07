@@ -50,20 +50,22 @@ public class Dao {
             Gson gson = new Gson();
             JsonArray jsonArray = new JsonArray();
 
-            // Asegurarnos de que solo las posiciones necesarias estén llenas
+            // Llenamos el JSON con "" excepto la parte del monito correspondiente al intento
             for (int i = 0; i < tablero.length; i++) {
-                if (tablero[i] == null) { // Si no se ha usado, guardar como vacío
-                    jsonArray.add("");
+                if (i <= intentos - 1) {  // Solo agrega la parte correspondiente al intento
+                    jsonArray.add(tablero[i]);
                 } else {
-                    jsonArray.add(tablero[i]); // Si ya hay una parte, guardarla
+                    jsonArray.add(""); // Deja los demás espacios vacíos
                 }
             }
 
             conexion.add(palabraAdivinada, letras, intentos, gson.toJson(jsonArray));
+
         } catch (Exception e) {
             setErrMsg(e.getMessage());
         }
     }
+
 
 
     public Dao(Database db) {

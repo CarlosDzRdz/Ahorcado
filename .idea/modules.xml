@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Ahorcado.iml" filepath="$PROJECT_DIR$/Ahorcado.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ahorcadosql.iml" filepath="$PROJECT_DIR$/ahorcadosql.iml" />
     </modules>
   </component>
 </project>
