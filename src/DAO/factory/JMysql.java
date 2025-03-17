@@ -111,16 +111,43 @@ public class JMysql implements Conn {
             System.out.println(err.getMessage());
             setErrMsg(err.getMessage());
         }
-
     }
 
     @Override
     public void delete() {
-
+        String sql = "DELETE FROM tablero";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            int rowsAffected = stmt.executeUpdate();
+            System.out.println("Se eliminaron " + rowsAffected + " registros de la tabla tablero.");
+        } catch (SQLException err) {
+            System.out.println("Error al borrar los registros: " + err.getMessage());
+            setErrMsg(err.getMessage());
+        }
     }
 
     @Override
     public void update() {
 
+    }
+
+    @Override
+    public void summary() {
+        String sql = "SELECT Fecha, Tablero, PalabraAdivinada, Letras, Intentos FROM tablero ORDER BY id DESC LIMIT 1";
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            if (rs.next()) {
+                System.out.println("\n===== RESUMEN DE LA ÚLTIMA PARTIDA (MySQL) =====");
+                System.out.println("Fecha: " + rs.getString("Fecha"));
+                System.out.println("Tablero: " + rs.getString("Tablero"));
+                System.out.println("PalabraAdivinada: " + rs.getString("PalabraAdivinada"));
+                System.out.println("Letras: " + rs.getString("Letras"));
+                System.out.println("Intentos: " + rs.getInt("Intentos"));
+                System.out.println("=============================================\n");
+            }
+        } catch (SQLException e) {
+            setErrMsg("Error al consultar el resumen: " + e.getMessage());
+        }
     }
 }

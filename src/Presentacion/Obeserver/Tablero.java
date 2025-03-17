@@ -1,7 +1,10 @@
 package Presentacion.Obeserver;
 
 import Presentacion.utilis.Utilis;
+
+import javax.swing.*;
 import java.util.*;
+import javax.swing.JOptionPane;
 
 public class Tablero {
     private List<Observer> observadores;
@@ -74,12 +77,12 @@ public class Tablero {
 
         // Actualiza el estado acumulado en función de las oportunidades
         switch (oportunidades) {
-            case 1 -> head1 = tablero[0]; // Asigna la cabeza
-            case 2 -> body1 = tablero[1]; // Asigna el cuerpo
-            case 3 -> lefta1 = tablero[2]; // Asigna el brazo izquierdo
-            case 4 -> righta1 = tablero[3]; // Asigna el brazo derecho
-            case 5 -> leftf1 = tablero[4]; // Asigna la pierna izquierda
-            case 6 -> rightf1 = tablero[5]; // Asigna la pierna derecha
+            case 1 -> head1 = tablero[0];
+            case 2 -> body1 = tablero[1];
+            case 3 -> lefta1 = tablero[2];
+            case 4 -> righta1 = tablero[3];
+            case 5 -> leftf1 = tablero[4];
+            case 6 -> rightf1 = tablero[5];
         }
 
         // Imprime el estado acumulado del monito
@@ -97,6 +100,9 @@ public class Tablero {
     }
 
     public void play() {
+
+        dibujarMonito();
+
         Scanner sc = new Scanner(System.in);
 
         while (intentosRestantes > 0 && espacios.toString().contains("_")) {

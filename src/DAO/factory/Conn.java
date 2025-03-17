@@ -10,4 +10,5 @@ public interface Conn {
     void add(String palabraAdivinada, String letras, int intentos, String tablero);
     void delete();
     void update();
+    void summary();
 }
