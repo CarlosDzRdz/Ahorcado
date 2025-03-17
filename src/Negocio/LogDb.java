@@ -1,44 +1,30 @@
 package Negocio;
 
-import DAO.factory.JMysql;
-import DAO.factory.JSqlite;
 import DAO.factory.Conn;
+import DAO.factory.ConnFactory;
 import Presentacion.Obeserver.Observer;
 import Presentacion.Obeserver.Tablero;
 import com.google.gson.Gson;
 
-import javax.swing.*;
-
 public class LogDb implements Observer {
     private Conn database;
     private String errMsg;
+    private String dbSeleccionada; // Variable para almacenar la base de datos elegida
 
-    public LogDb() {
-        this.database = seleccionarBaseDeDatos();
-        this.database.conectar();
-        this.database.delete(); // Borrar datos al iniciar el juego
+    public LogDb(String dbSeleccionada) {
+        this.dbSeleccionada = dbSeleccionada;
     }
 
-    private Conn seleccionarBaseDeDatos() {
-        String[] opciones = {"MySQL", "SQLite", "Cancelar"};
+    public void inicializarConexion() {
+        // Solicitar la conexión a la capa DAO
+        this.database = ConnFactory.obtenerConexion(dbSeleccionada);
 
-        int seleccion = JOptionPane.showOptionDialog(
-                null,
-                "¿Qué base de datos desea utilizar?",
-                "Bases de datos disponibles",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opciones,
-                opciones[0]
-        );
-
-        if (seleccion == 2) { // Cancelar
-            System.out.println("El usuario canceló la selección.");
-            System.exit(0);
+        // Conectar y limpiar la base de datos
+        if (database != null) {
+            database.conectar();
+            database.summary();
+            database.delete();  // Se borra el contenido de la tabla
         }
-
-        return (seleccion == 0) ? JMysql.getInstance() : JSqlite.getInstance();
     }
 
     public String getErrMsg() {
@@ -51,6 +37,8 @@ public class LogDb implements Observer {
 
     @Override
     public void update(Tablero tablero) {
+        if (database == null) return;
+
         try {
             Gson gson = new Gson();
             String tableroJson = gson.toJson(tablero.getTablero());
@@ -67,6 +55,8 @@ public class LogDb implements Observer {
     }
 
     public void showRun() {
+        if (database == null) return;
+
         try {
             database.query("SELECT * FROM tablero");
         } catch (Exception e) {

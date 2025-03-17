@@ -4,14 +4,23 @@ import Negocio.LogDb;
 import Presentacion.Obeserver.Jugador;
 import Presentacion.Obeserver.Tablero;
 
+import javax.swing.*;
+
 public class Main {
-    static Tablero tablero = new Tablero();
+    static Tablero tablero;
 
     public static void main(String[] args) throws InterruptedException {
         boolean seguirJugando = true;
 
         while (seguirJugando) {
-            iniciarJuego();
+            // Preguntar qué base de datos usar y pasar la opción como parámetro
+            String dbSeleccionada = seleccionarBaseDeDatos();
+            if (dbSeleccionada == null) {
+                System.out.println("No se seleccionó una base de datos válida. Saliendo del juego.");
+                System.exit(0);
+            }
+
+            iniciarJuego(dbSeleccionada);
             tablero.play();
             seguirJugando = menuFinPartida();
         }
@@ -20,11 +29,14 @@ public class Main {
         System.exit(0);
     }
 
-    private static void iniciarJuego() throws InterruptedException {
+    private static void iniciarJuego(String dbSeleccionada) throws InterruptedException {
         tablero = new Tablero();
 
-        // LogDb maneja internamente la base de datos y la limpieza
-        LogDb negocio = new LogDb();
+        // Crear instancia de LogDb y pasar la base de datos seleccionada
+        LogDb negocio = new LogDb(dbSeleccionada);
+
+        // Obtener la conexión desde la capa de negocio
+        negocio.inicializarConexion();
 
         // Conectar los observadores
         Jugador jugador = new Jugador();
@@ -32,15 +44,39 @@ public class Main {
         tablero.attach(negocio);
     }
 
+    private static String seleccionarBaseDeDatos() {
+        String[] opciones = {"MySQL", "SQLite", "Cancelar"};
+
+        int seleccion = JOptionPane.showOptionDialog(
+                null,
+                "¿Qué base de datos desea utilizar?",
+                "Bases de datos disponibles",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opciones,
+                opciones[0]
+        );
+
+        switch (seleccion) {
+            case 0:
+                return "MySQL";
+            case 1:
+                return "SQLite";
+            default:
+                return null;
+        }
+    }
+
     private static boolean menuFinPartida() {
         String[] opciones = {"Jugar de nuevo", "Salir"};
 
-        int seleccion = javax.swing.JOptionPane.showOptionDialog(
+        int seleccion = JOptionPane.showOptionDialog(
                 null,
                 "¿Qué desea hacer?",
                 "Fin de la partida",
-                javax.swing.JOptionPane.DEFAULT_OPTION,
-                javax.swing.JOptionPane.QUESTION_MESSAGE,
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
                 null,
                 opciones,
                 opciones[0]
