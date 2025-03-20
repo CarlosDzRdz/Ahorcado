@@ -1,0 +1,12 @@
+@startuml AhorcadoC4_Containers
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(player, "Jugador", "El usuario que juega al ahorcado")
+
+Container(app, "Aplicación Ahorcado", "Java", "Contiene la lógica del juego y gestiona la base de datos")
+Container(consola, "Consola", "Interfaz de Usuario", "Interfaz de línea de comandos para interactuar con el juego")
+
+Rel(player, consola, "Interactúa con")
+Rel(consola, app, "Envía comandos y recibe actualizaciones")
+
+@enduml

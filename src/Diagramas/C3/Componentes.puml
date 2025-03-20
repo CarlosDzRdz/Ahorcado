@@ -1,0 +1,34 @@
+@startuml C3_Ahorcado
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Person(player, "Jugador", "El usuario que juega al ahorcado")
+
+package "Interfaz de Usuario" as UI {
+  Component(Main, "Main", "Java", "Punto de entrada, inicia el juego")
+  Component(Tablero, "Tablero", "Java", "Controla el flujo del juego")
+  Component(Jugador, "Jugador", "Java", "Interacción con el juego")
+}
+
+package "Capa de Negocio" as NEGOCIO {
+  Component(LogDb, "LogDb", "Java", "Gestiona la persistencia y conexión con DAO")
+}
+
+package "Capa de Persistencia (DAO)" as DAO {
+  Component(Dao, "Dao", "Java", "Interfaz para acceso a la BD")
+  Component(JMysql, "JMysql", "JDBC", "Implementación de MySQL")
+  Component(JSqlite, "JSqlite", "JDBC", "Implementación de SQLite")
+  Component(ConnFactory, "ConnFactory", "Java", "Factoría Singleton para seleccionar BD")
+}
+
+Rel(player, Main, "Inicia el juego")
+Rel(Main, Tablero, "Gestiona el juego")
+Rel(Tablero, LogDb, "Selecciona la BD")
+Rel(Tablero, Jugador, "Interacción del jugador")
+Rel(LogDb, Dao, "Accede a la BD")
+Rel(LogDb, ConnFactory, "Realiza conexion")
+Rel(Dao, JMysql, "Accede a MySQL")
+Rel(Dao, JSqlite, "Accede a SQLite")
+Rel(ConnFactory, JMysql, "Crea instancia de MySQL")
+Rel(ConnFactory, JSqlite, "Crea instancia de SQLite")
+
+@enduml
