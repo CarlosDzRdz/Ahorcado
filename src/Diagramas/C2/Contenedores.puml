@@ -2,21 +2,15 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 !define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
 !define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
-!include DEVICONS/angular.puml
 !include DEVICONS/java.puml
 !include DEVICONS/msql_server.puml
-!include FONTAWESOME/users.puml
 !include FONTAWESOME/server.puml
 
-SHOW_PERSON_OUTLINE()
 AddElementTag("backendContainer", $fontColor=$ELEMENT_FONT_COLOR, $bgColor="#335DA5", $shape=EightSidedShape(), $legendText="backend container\neight sided")
-AddRelTag("async", $textColor=$ARROW_FONT_COLOR, $lineColor=$ARROW_COLOR, $lineStyle=DashedLine())
-AddRelTag("sync/async", $textColor=$ARROW_FONT_COLOR, $lineColor=$ARROW_COLOR, $lineStyle=DottedLine())
-
 
 Container(consola, "Consola", "Interfaz de Usuario", "Interfaz de línea de comandos para ingresar letras")
 Container(interfaz, "Interfaz", "Programado en java", "Interfaz de línea de comandos para interactuar con el juego")
-Container(backend, "Aplicacion", "Java, Docker Container", "Provides Internet banking functionality via API", $tags="backendContainer", $sprite="java")
+    Container(backend, "Aplicacion", "Java, Docker Container", "Proporciona funcionalidad a travez de la API", $tags="backendContainer", $sprite="java")
 
 ContainerDb(mysql, "Base de Datos", "MySQL", "Almacena los datos del juego en MySQL", $sprite="msql_server")
 ContainerDb(sqlite, "Base de Datos", "SQLite", "Almacena los datos del juego en SQLite", "server")

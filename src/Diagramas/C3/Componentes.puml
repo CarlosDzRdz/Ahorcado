@@ -1,34 +1,92 @@
 @startuml C3_Ahorcado
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!include DEVICONS/java.puml
+!include DEVICONS/java.puml
+!include DEVICONS/msql_server.puml
+!include FONTAWESOME/server.puml
 
-Person(player, "Jugador", "El usuario que juega al ahorcado")
+AddElementTag("backendContainer", $fontColor=$ELEMENT_FONT_COLOR, $bgColor="#335DA5", $shape=EightSidedShape(), $legendText="backend container\neight sided")
+
+Container(backend, "Aplicacion", "Java, Docker Container", "Proporciona funcionalidad a travez de la API", $tags="backendContainer", $sprite="java")
 
 package "Interfaz de Usuario" as UI {
-  Component(Main, "Main", "Java", "Punto de entrada, inicia el juego")
-  Component(Tablero, "Tablero", "Java", "Controla el flujo del juego")
-  Component(Jugador, "Jugador", "Java", "Interacción con el juego")
+  Component(Main, "Main", "Java", "Punto de entrada, inicia el juego y gestiona el flujo principal")
+  Component(Tablero, "Tablero", "Java", "Controla el estado del juego y actualiza la interfaz")
+  Component(Jugador, "Jugador", "Java", "Procesa la entrada del usuario")
 }
 
 package "Capa de Negocio" as NEGOCIO {
-  Component(LogDb, "LogDb", "Java", "Gestiona la persistencia y conexión con DAO")
+  Component(LogDb, "LogDb", "Java", "Gestiona la persistencia de datos y la conexión con DAO")
 }
 
 package "Capa de Persistencia (DAO)" as DAO {
-  Component(Dao, "Dao", "Java", "Interfaz para acceso a la BD")
-  Component(JMysql, "JMysql", "JDBC", "Implementación de MySQL")
-  Component(JSqlite, "JSqlite", "JDBC", "Implementación de SQLite")
-  Component(ConnFactory, "ConnFactory", "Java", "Factoría Singleton para seleccionar BD")
+  Component(Dao, "Dao", "Java", "Interfaz de acceso a la base de datos")
+
+  package DBFACTORY as "Factory"
+
+  ContainerDb(JMysql, "Base de Datos", "MySQL", "Almacena los datos del juego en MySQL", $sprite="msql_server")
+  ContainerDb(JSqlite, "Base de Datos", "SQLite", "Almacena los datos del juego en SQLite", "server")
 }
 
-Rel(player, Main, "Inicia el juego")
-Rel(Main, Tablero, "Gestiona el juego")
-Rel(Tablero, LogDb, "Selecciona la BD")
-Rel(Tablero, Jugador, "Interacción del jugador")
-Rel(LogDb, Dao, "Accede a la BD")
-Rel(LogDb, ConnFactory, "Realiza conexion")
-Rel(Dao, JMysql, "Accede a MySQL")
-Rel(Dao, JSqlite, "Accede a SQLite")
-Rel(ConnFactory, JMysql, "Crea instancia de MySQL")
-Rel(ConnFactory, JSqlite, "Crea instancia de SQLite")
+Rel(backend, Main, "Inicia el juego")
+Rel(Main, Tablero, "Envía comandos y recibe actualizaciones del estado del juego")
+Rel(Jugador, Tablero, "Envía las letras ingresadas")
+Rel(Tablero, LogDb, "Solicita el almacenamiento del estado del juego")
+Rel(LogDb, Dao, "Realiza operaciones en la BD")
+Rel(LogDb, DBFACTORY, "Selecciona la conexión a la BD")
+Rel(Dao, JMysql, "Guarda y recupera datos en MySQL")
+Rel(Dao, JSqlite, "Guarda y recupera datos en SQLite")
+Rel(DBFACTORY, JMysql, "Crea instancia de MySQL")
+Rel(DBFACTORY, JSqlite, "Crea instancia de SQLite")
+Rel(Dao, DBFACTORY, "Selecciona la base de datos (Singleton)")
 
 @enduml
+
+
+/*
+@startuml AhorcadoC4
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(player, "Jugador", "El usuario que juega al ahorcado")
+
+package "Capa de Presentación" as PRESENTACION {
+  component UI as "Interfaz de Usuario"
+  component Tablero as "Tablero"
+  note right of Tablero: Implementa un Observer para actualizar el estado del juego
+  note left of Tablero: Usa observer
+
+  component Jugador as "Jugador"
+  note right of Jugador: Usa el Observer para notificar cambios
+}
+
+package "Capa de Negocio" as NEGOCIO {
+  component LogDb as "LogDb"
+  note right: Gestiona la selección de la base de datos y la comunicación con la capa DAO
+}
+
+package "Capa de Persistencia (DAO)" as DAO {
+  component DB as "DB"
+
+  package DBFACTORY as "Factory"
+
+  component JMYSQL as "MySQL"
+  note right: Implementación MySQL
+
+  component JSQLITE as "SQLite"
+  note right: Implementación SQLite
+}
+
+Rel(player, UI, "Interactúa con")
+Rel(UI, Tablero, "Controla el juego")
+Rel(Jugador, Tablero, "Notifica cambios (Observer)")
+Rel(Tablero, LogDb, "Avisa cambios y accede a la bd")
+Rel(LogDb, DB, "Guarda y recupera datos")
+Rel(DB, DBFACTORY, "Selecciona la base de datos (Singlenton)")
+Rel(DBFACTORY, JMYSQL, "Crea instancia de MySQL")
+Rel(DBFACTORY, JSQLITE, "Crea instancia de SQLite")
+
+@enduml
+
+*/

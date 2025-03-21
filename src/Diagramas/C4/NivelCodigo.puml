@@ -1,42 +1,93 @@
-@startuml AhorcadoC4
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+@startuml C4_Ahorcado
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-Person(player, "Jugador", "El usuario que juega al ahorcado")
+package "presentacion" {
+  class Main {
+    + static void main(String[] args)
+  }
 
-package "Capa de Presentación" as PRESENTACION {
-  component UI as "Interfaz de Usuario"
-  component Tablero as "Tablero"
-  note right of Tablero: Implementa un Observer para actualizar el estado del juego
-  note left of Tablero: Usa observer
+  class Tablero {
+    - String palabraSecreta
+    - int oportunidades
+    - List<Observer> observadores
+    + void registrarObservador(Observer o)
+    + void notificarObservadores()
+    + void verificarLetra(char letra)
+  }
 
-  component Jugador as "Jugador"
-  note right of Jugador: Usa el Observer para notificar cambios
+  interface Observer {
+    + void actualizar()
+  }
+
+  class Jugador implements Observer {
+    - String nombre
+    + void actualizar()
+  }
+
+  ' Relaciones dentro de presentación
+  Main --> Tablero
+  Jugador -|> Observer
+  Tablero -> Observer
+  Tablero "1" o-- "*" Jugador : "Observa cambios"
 }
 
-package "Capa de Negocio" as NEGOCIO {
-  component LogDb as "LogDb"
-  note right: Gestiona la selección de la base de datos y la comunicación con la capa DAO
+package "negocio" {
+  class LogDb {
+    - Conn conexion
+    + void guardarEstadoJuego(Tablero tablero)
+  }
+
+  ' Relación dentro de negocio
+  Tablero --> LogDb : "Guarda estado"
+  LogDb ..|> presentacion.Observer : "Implementa Observer"
 }
 
-package "Capa de Persistencia (DAO)" as DAO {
-  component DB as "DB"
+package "DAO" {
+  class Dao {
+    + void insertarDatos(Tablero tablero)
+  }
 
-  package DBFACTORY as "Factory"
+  package "factory" {
+    class ConnFactory {
+      + static Conn getConexion(String tipoBD)
+    }
 
-  component JMYSQL as "MySQL"
-  note right: Implementación MySQL
+    interface Conn {
+      + Connection getConnection()
+    }
 
-  component JSQLITE as "SQLite"
-  note right: Implementación SQLite
+    class MysqlConnectionFactory implements ConnFactory{
+      + static Conn getConexion()
+    }
+
+    class SqliteConnectionFactory implements ConnFactory {
+      + static Conn getConexion()
+    }
+
+    class JMysql implements Conn {
+        + void insertarDatos(Tablero tablero)
+      }
+
+    class JSqlite implements Conn {
+      + void insertarDatos(Tablero tablero)
+    }
+
+    enum Database {
+        JMysql, JSqlite
+    }
+  }
+
+  ' Relaciones dentro de DAO
+  LogDb --> Dao : "Accede a la BD"
+  Dao --> factory.ConnFactory : "Selecciona conexión"
+
+  ' Relaciones dentro de factory
+
+  factory.MysqlConnectionFactory --> JMysql : "Crea conexión MySQL"
+  factory.SqliteConnectionFactory --> JSqlite : "Crea conexión SQLite"
+
+  Dao ..|> Database : "Permisos de lectura"
 }
 
-Rel(player, UI, "Interactúa con")
-Rel(UI, Tablero, "Controla el juego")
-Rel(Jugador, Tablero, "Notifica cambios (Observer)")
-Rel(Tablero, LogDb, "Avisa cambios y accede a la bd")
-Rel(LogDb, DB, "Guarda y recupera datos")
-Rel(DB, DBFACTORY, "Selecciona la base de datos (Singlenton)")
-Rel(DBFACTORY, JMYSQL, "Crea instancia de MySQL")
-Rel(DBFACTORY, JSQLITE, "Crea instancia de SQLite")
-
+note "Las lineas (flechas) punteadas representan la implementacion de una clase en otra, por ejemplo: LogDb implementa Observer" as Nota1
 @enduml
